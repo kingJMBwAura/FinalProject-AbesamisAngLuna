@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-# from .models import ....
+from .models import Employee, Payslip, Account
 
-# Create your views here.
+id = 0
 
+# Account management methods
 def login(request):
     global id
     if request.method == "POST":
@@ -51,7 +52,7 @@ def manage_account(request, pk):
         return redirect("login")
     
     else:
-        return render(request, 'MyInventoryApp/manage_account.html', {'account': account})
+        return render(request, 'payroll_app/manage_account.html', {'account': account})
 
 def change_password(request, pk):
     try:
@@ -65,21 +66,32 @@ def change_password(request, pk):
         confirm_password = request.POST.get('confirm_password')
         
         if current_password is None:
-            return render(request, 'MyInventoryApp/change_password.html', {'account': account})
+            return render(request, 'payroll_app/change_password.html', {'account': account})
         
         if current_password != account.password:
-            return render(request, 'MyInventoryApp/change_password.html', {'error': 'Current password is incorrect', 'account': account})
+            return render(request, 'payroll_app/change_password.html', {'error': 'Current password is incorrect', 'account': account})
         
         if current_password == new_password:
-            return render(request, 'MyInventoryApp/change_password.html', {'error': 'Please change current password', 'account': account})
+            return render(request, 'payroll_appp/change_password.html', {'error': 'Please change current password', 'account': account})
         
         if new_password != confirm_password:
-            return render(request, 'MyInventoryApp/change_password.html', {'error': 'New passwords do not match', 'account': account})
+            return render(request, 'payroll_app/change_password.html', {'error': 'New passwords do not match', 'account': account})
         
         account.password = new_password
         account.save()
 
-        return render(request, 'MyInventoryApp/manage_account.html', {'success': 'Password changed successfully', 'account': account})
+        return render(request, 'payroll_app/manage_account.html', {'success': 'Password changed successfully', 'account': account})
     else:
-        return render(request, 'MyInventoryApp/change_password.html', {'account': account})
+        return render(request, 'payroll_app/change_password.html', {'account': account})
 
+# misc
+
+def homepage(request):
+    global id  # call account pk
+    employee = Employee.objects.all()
+
+    if id != 0:  # long as account pk = nonzero
+        account = get_object_or_404(Account, pk=id)
+        return render(request, 'payroll_app/homepage.html', {'employee': employee, 'account': account, 'id': id})
+    else:
+        return render(request, 'payroll_app/homepage.html', {'employee': employee, 'id': id})

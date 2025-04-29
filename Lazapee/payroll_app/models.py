@@ -1,7 +1,6 @@
 from django.db import models
 
 # Create your models here.
-
 class Employee(models.Model):
     name = models.CharField(max_length=50)
     id_number = models.CharField(max_length=30, primary_key=True)
@@ -23,19 +22,19 @@ class Employee(models.Model):
 
     def resetOvertime(self):
         self.overtime_pay = 0
-        self.save() # reset and saves ot pay to 0
+        self.save() # reset and saves overtime pay to 0
 
     def getAllowance(self):
         return self.allowance
 
-    def str(self):
-        return f"{self.id_number} : {self.name} (Rate: {self.rate:.2f})"
+    def __str__(self):
+        return f"{self.pk}: {self.id_number}, rate: {self.rate:.2f}"
 
     class Meta:
         ordering = ['name'] # arranges names
 
 class Payslip(models.Model):
-    id_number = models.ForeignKey(Employee, on_delete=models.CASCADE) # when payslip deleted, delete employee as well 
+    id_number = models.ForeignKey(Employee, on_delete=models.CASCADE) # when employee is deleted, payslip is deleted
     month = models.CharField(max_length=30)
     date_range = models.CharField(max_length=300) 
     year = models.CharField(max_length=4) 
@@ -91,9 +90,29 @@ class Payslip(models.Model):
     def getTotal_pay(self):
         return self.total_pay
 
-    def str(self):
-        return (f"{self.id_number} | {self.month} {self.date_range}, {self.year} "
-                f"(Cycle {self.pay_cycle}) - Total Pay: ₱{self.total_pay:.2f}")
+    def __str__(self):
+        return (f"pk: {self.pk}, Employee: {self.id_number}, Period: {self.month} {self.date_range}, Year: {self.year}, Cycle: {self.pay_cycle}, Total Pay: {self.total_pay:.2f}")
 
     class Meta:
-        ordering = ['year', 'month'] # arranges years and months 
+        ordering = ['year', 'month'] # arranges years and months
+
+# account management class and methods
+class Account(models.Model):
+    username = models.CharField(max_length=50, unique=True)
+    password = models.CharField(max_length=50)
+
+    def check_password(self, password):
+        return self.password == password
+    
+    def set_password(self, new_password):
+        self.password = new_password
+        self.save()
+
+    def getUsername(self):
+        return self.username
+    
+    def getPassword(self):
+        return self.password
+    
+    def __str__(self):
+        return str(self.pk) + ": " + self.username
