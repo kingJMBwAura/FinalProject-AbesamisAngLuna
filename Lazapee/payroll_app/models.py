@@ -1,9 +1,6 @@
 from django.db import models
 
 # Create your models here.
-<<<<<<< Updated upstream
-=======
-
 class Employee(models.Model):
     name = models.CharField(max_length=50)
     id_number = models.CharField(max_length=30, primary_key=True)
@@ -118,17 +115,4 @@ class Account(models.Model):
         return self.password
     
     def __str__(self):
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         return str(self.pk) + ": " + self.username
->>>>>>> Stashed changes
-=======
-        return str(self.pk) + ": " + self.username
->>>>>>> Stashed changes
-=======
-        return str(self.pk) + ": " + self.username
->>>>>>> Stashed changes
-=======
-        return str(self.pk) + ": " + self.username
->>>>>>> Stashed changes
