@@ -120,6 +120,10 @@ class Account(models.Model):
     def __str__(self):
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+        return str(self.pk) + ": " + self.username
+>>>>>>> Stashed changes
+=======
         return str(self.pk) + ": " + self.username
 >>>>>>> Stashed changes
 =======
