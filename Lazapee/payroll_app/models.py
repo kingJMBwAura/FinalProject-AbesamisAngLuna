@@ -118,5 +118,9 @@ class Account(models.Model):
         return self.password
     
     def __str__(self):
+<<<<<<< Updated upstream
+        return str(self.pk) + ": " + self.username
+>>>>>>> Stashed changes
+=======
         return str(self.pk) + ": " + self.username
 >>>>>>> Stashed changes
