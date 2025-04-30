@@ -70,7 +70,7 @@ def change_password(request, pk):
             return render(request, 'payroll_app/change_password.html', {'error': 'Current password is incorrect', 'account': account})
         
         if current_password == new_password:
-            return render(request, 'payroll_appp/change_password.html', {'error': 'Please change current password', 'account': account})
+            return render(request, 'payroll_app/change_password.html', {'error': 'Please change current password', 'account': account})
         
         if new_password != confirm_password:
             return render(request, 'payroll_app/change_password.html', {'error': 'New passwords do not match', 'account': account})
