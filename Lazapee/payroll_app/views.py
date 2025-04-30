@@ -13,7 +13,7 @@ def login(request):
 
         try:
             account = Account.objects.get(username=username)
-            if account.password == password:  # or account.getPassword()
+            if account.check_password(password):
                 id = account.pk
                 return redirect('homepage')
             else:
@@ -39,18 +39,18 @@ def signup(request):
         return render(request, 'payroll_app/signup.html')
     
 def manage_account(request, pk):
-    try:
-        account = Account.objects.get(pk=pk)
-    # send user back if account does not exist
-    except Account.DoesNotExist:
-        return redirect('login')
+    global id
+    if int(pk) != id:
+        return redirect('login')  # Force logout if pk doesn't match current session
     
+    account = get_object_or_404(Account, pk=pk)
+
     if request.method == "POST" and request.POST.get("delete_account") == "true":
         account.delete()
+        id = 0
         return redirect("login")
     
-    else:
-        return render(request, 'payroll_app/manage_account.html', {'account': account})
+    return render(request, 'payroll_app/manage_account.html', {'account': account})
 
 def change_password(request, pk):
     try:
@@ -75,8 +75,7 @@ def change_password(request, pk):
         if new_password != confirm_password:
             return render(request, 'payroll_app/change_password.html', {'error': 'New passwords do not match', 'account': account})
         
-        account.password = new_password
-        account.save()
+        account.set_password(new_password)
 
         return render(request, 'payroll_app/manage_account.html', {'success': 'Password changed successfully', 'account': account})
     else:
