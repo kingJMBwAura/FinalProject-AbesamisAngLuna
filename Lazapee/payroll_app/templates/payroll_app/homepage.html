@@ -1,20 +1,22 @@
 {% extends 'payroll_app/base.html' %}
 {% load static %}
 
-{%block nav%}
-    <div class="container-fluid">
-        <a class="navbar-brand mb-0" href="">Suppliers List</span></a>
-    </div>
-{%endblock%}
+{% block nav %}
+<ul class="navbar-nav d-flex flex-row">
+    <li class="nav-item me-3">
+    <a class="nav-link" href="">Employees</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="">Payslips</a>
+    </li>
+</ul>
+{% endblock %}
 
 {%block content%}
-    <div class="row"></div>
-        <div class="col-2">
-            <h5>Employees</h5>
-        </div>
+
         <div class="col-10">
             <div class="d-flex justify-content-end mb-3">
-                <a href="{% url 'create_employee' %}" class="btn btn-secondary text-muted me-2">+New Employee</a>
+                <a href="" class="btn btn-secondary me-2">+New Employee</a>
                 <a href="{% url 'manage_account' pk=account.pk %}" class="btn btn-secondary me-2">Manage Account</a>
                 <a href="{% url 'login' %}" class="btn btn-danger">Log Out</a>
             </div>

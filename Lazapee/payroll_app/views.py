@@ -6,37 +6,35 @@ id = 0
 # Account management methods
 def login(request):
     global id
+    id = 0  # reset on every login attempt
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         try:
             account = Account.objects.get(username=username)
-            if account.getPassword() == password:
-                # sets id to the pk of the account in use
+            if account.password == password:  # or account.getPassword()
                 id = account.pk
-                return redirect('view_supplier')
+                return redirect('homepage')
             else:
-                return render(request, 'payroll_app/login.html', {'error': 'Invalid login'})
+                return render(request, 'payroll_app/login.html', {'error': 'Invalid password'})
         except Account.DoesNotExist:
-            return render(request, 'payroll_app/login.html', {'error': 'Invalid login'})
-        
+            return render(request, 'payroll_app/login.html', {'error': 'Account does not exist'})
     else:
         return render(request, 'payroll_app/login.html')
     
 def signup(request):
+    global id
+    id = 0
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         if Account.objects.filter(username=username).exists():
             return render(request, 'payroll_app/signup.html', {'error': 'Account already exists'})
-        
         else:
-            account = Account.objects.create(username=username, password=password)
-            account.save()
-            return render(request, 'payroll_app/login.html', {'success': 'Account created successfully', 'account':account,'id':id})
-        
+            Account.objects.create(username=username, password=password)
+            return redirect('login')
     else:
         return render(request, 'payroll_app/signup.html')
     
@@ -91,7 +89,11 @@ def homepage(request):
     employee = Employee.objects.all()
 
     if id != 0:  # long as account pk = nonzero
-        account = get_object_or_404(Account, pk=id)
-        return render(request, 'payroll_app/homepage.html', {'employee': employee, 'account': account, 'id': id})
+        try:
+            account = get_object_or_404(Account, pk=id)
+            return render(request, 'payroll_app/homepage.html', 
+                          {'employee': employee, 'account': account, 'id': id})
+        except:
+            return redirect('login')
     else:
-        return render(request, 'payroll_app/homepage.html', {'employee': employee, 'id': id})
+        return redirect('login')

@@ -24,11 +24,15 @@
 </head>
 <body>
     <nav class="navbar navbar-dark bg-custom mb-3 sticky-top" style="background-color: #ee4d2d;">
-        <h2 style="color: white;">
+<div class="container-fluid">
+            <div class="d-flex align-items-center">
+        <h2 class="me-3" style="color: white;">
             LAZAPEE Payroll
         </h2>
-        {%block nav%}
-        {%endblock%}
+        {% block nav %}
+        {% endblock %}
+    </div>
+</div>
     </nav>
     <div class="container-fluid">
         <div class="col-12">
