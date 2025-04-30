@@ -1,12 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Employee, Payslip, Account
 
-id = 0
-
 # Account management methods
 def login(request):
-    global id
-    id = 0  # reset on every login attempt
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -14,7 +10,7 @@ def login(request):
         try:
             account = Account.objects.get(username=username)
             if account.check_password(password):
-                id = account.pk
+                request.session['account_id'] = account.pk  # request session instead of global id
                 return redirect('homepage')
             else:
                 return render(request, 'payroll_app/login.html', {'error': 'Invalid password'})
@@ -24,8 +20,6 @@ def login(request):
         return render(request, 'payroll_app/login.html')
     
 def signup(request):
-    global id
-    id = 0
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -39,60 +33,63 @@ def signup(request):
         return render(request, 'payroll_app/signup.html')
     
 def manage_account(request, pk):
-    global id
-    if int(pk) != id:
-        return redirect('login')  # Force logout if pk doesn't match current session
-    
+    session_id = request.session.get('account_id')
+    if session_id != int(pk):
+        return redirect('login')
+
     account = get_object_or_404(Account, pk=pk)
 
     if request.method == "POST" and request.POST.get("delete_account") == "true":
         account.delete()
-        id = 0
+        request.session.flush()  # remove session and properly log out
         return redirect("login")
-    
+
     return render(request, 'payroll_app/manage_account.html', {'account': account})
 
 def change_password(request, pk):
+    session_id = request.session.get('account_id')
+    if session_id != int(pk):
+        return redirect('login')
+
     try:
         account = Account.objects.get(pk=pk)
-    # send user back if account does not exist
     except Account.DoesNotExist:
         return redirect('login')
+
     if request.method == "POST":
         current_password = request.POST.get('password')
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
-        
-        if current_password is None:
-            return render(request, 'payroll_app/change_password.html', {'account': account})
-        
+
         if current_password != account.password:
             return render(request, 'payroll_app/change_password.html', {'error': 'Current password is incorrect', 'account': account})
-        
+
         if current_password == new_password:
             return render(request, 'payroll_app/change_password.html', {'error': 'Please change current password', 'account': account})
-        
+
         if new_password != confirm_password:
             return render(request, 'payroll_app/change_password.html', {'error': 'New passwords do not match', 'account': account})
-        
-        account.set_password(new_password)
 
+        account.set_password(new_password)
         return render(request, 'payroll_app/manage_account.html', {'success': 'Password changed successfully', 'account': account})
     else:
         return render(request, 'payroll_app/change_password.html', {'account': account})
 
+def logout(request):
+    request.session.flush()  # logout
+    return redirect('login')
+
 # misc
-
 def homepage(request):
-    global id  # call account pk
-    employee = Employee.objects.all()
+    account_id = request.session.get('account_id')
 
-    if id != 0:  # long as account pk = nonzero
+    if account_id:
         try:
-            account = get_object_or_404(Account, pk=id)
+            account = get_object_or_404(Account, pk=account_id)
+            employee = Employee.objects.all()
             return render(request, 'payroll_app/homepage.html', 
-                          {'employee': employee, 'account': account, 'id': id})
-        except:
+                          {'employee': employee, 'account': account})
+        except Account.DoesNotExist:
             return redirect('login')
     else:
         return redirect('login')

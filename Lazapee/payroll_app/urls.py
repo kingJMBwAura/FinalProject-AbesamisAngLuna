@@ -25,6 +25,7 @@ urlpatterns = [
     path('manage_account/<int:pk>/', views.manage_account, name='manage_account'),
     path('change_password/<int:pk>/', views.change_password, name='change_password'),
     path('', views.homepage, name='homepage'),
+    path('logout/', views.logout, name='logout'),
     #path('add_employee/', views.add_employee, name='add_employee'),
     #path('view_employee/<int:pk>/', views.view_employee, name='view_employee'),
     #ath('edit_employee/<int:pk>/', views.edit_employee, name='edit_employee'),
