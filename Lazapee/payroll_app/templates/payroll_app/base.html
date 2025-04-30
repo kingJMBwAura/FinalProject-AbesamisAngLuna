@@ -29,8 +29,16 @@
         <h2 class="me-3" style="color: white;">
             LAZAPEE Payroll
         </h2>
-        {% block nav %}
-        {% endblock %}
+        {% if request.path != '/login/' and request.path != '/signup/' %}
+        <ul class="navbar-nav d-flex flex-row">
+            <li class="nav-item me-3">
+            <a class="nav-link" href="{% url 'homepage' %}">Employees</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="">Payslips</a>
+            </li>
+        </ul>
+        {% endif %}
     </div>
 </div>
     </nav>
