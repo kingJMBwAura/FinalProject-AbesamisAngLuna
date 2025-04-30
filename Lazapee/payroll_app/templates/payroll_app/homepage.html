@@ -21,23 +21,22 @@
                 </tr>
             </thead>
             <tbody>
-                {% for e in Employees %} <!-- Loop through the employees -->
+                {% for e in employee %} <!-- Loop through the employees -->
                 <tr>
                     <td> {{ e.name }} </td>
                     <td> {{ e.id_number }} </td>
                     <td> {{ e.rate }} </td>
                     <td> {{ e.allowance }} </td>
                     <td> {{ e.overtime_pay }} </td>
-
+                    <td>
                         <a href="{% url 'update_employee' %}" class="btn btn-primary">Update</a>
-                        <a href="" class="btn btn-danger">Delete</a> <!-- Update/add method to delete from database-->
-                        <div class="d-flex align-items-center">
-                            <div class="me-2"></div>
-                                <label for="quant-{{ e.id }}" class="form-label">Overtime Hours</label>
-                                <input type="number" min="0" class="form-control" id="quant-{{ e.id }}" name="quant" required> <!-- update overtime + add overtime buttons -->
-                            </div>
-                            <a href="{% url 'view_employee' %}" class="btn btn-success">Add Overtime</a>
-                        </div>
+                        <a href="{% url 'delete_employee' pk=e.pk %}" class="btn btn-danger">Delete</a>
+                        <form action="{% url 'add_overtime' pk=e.pk %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <label for="quant-{{ e.id }}">OT Hours</label>
+                            <input type="number" min="0" name="quant" id="quant-{{ e.id }}" required>
+                            <button type="submit" class="btn btn-success">Add Overtime</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}
