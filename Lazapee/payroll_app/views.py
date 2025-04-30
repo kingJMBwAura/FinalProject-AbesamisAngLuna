@@ -34,7 +34,7 @@ def signup(request):
             return render(request, 'payroll_app/signup.html', {'error': 'Account already exists'})
         else:
             Account.objects.create(username=username, password=password)
-            return render(request, 'payroll_app/login.html', {'success': 'Account created successfully'})
+            return redirect('login')
     else:
         return render(request, 'payroll_app/signup.html')
     

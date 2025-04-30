@@ -16,11 +16,6 @@
                                     {{ error }}
                                 </div>
                                 {% endif %}
-                                {% if success %}
-                                <div class="alert alert-success" role="alert">
-                                    {{ success }}
-                                </div>
-                                {% endif %}
 
                                 <form id="login_form" action="" method="POST"> {% csrf_token %}
                                     <div class="mb-3">
