@@ -36,19 +36,17 @@
                     <td> {{ e.allowance }} </td>
                     <td> {{ e.overtime_pay }} </td>
                     <td>
-                        <div class="d-flex flex-column">
-                            <div class="d-flex justify-content-between mb-2">
-                                <a href="" class="btn btn-primary">Update</a>
-                                <a href="" class="btn btn-danger">Delete</a>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex gap-2">
+                                <a href="" class="btn btn-primary btn-sm">Update</a>
+                                <a href="" class="btn btn-danger btn-sm">Delete</a>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <label for="quant-{{ e.id }}">OT Hours</label>
-                                    <input type="number" min="0" name="quant" id="quant-{{ e.id }}" required>
-                                </div>
+                            <div class="d-flex gap-2">
+                                <input type="number" min="0" name="quant" id="quant-{{ e.id }}"
+                                class="form-control form-control-sm" placeholder="Overtime Hours" required>
                                 <form action="" method="post" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-success">Add Overtime</button>
+                                    <button type="submit" class="btn btn-success btn-sm">Add Overtime</button>
                                 </form>
                             </div>
                         </div>
