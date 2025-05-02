@@ -41,7 +41,7 @@ def manage_account(request, pk):
 
     if request.method == "POST" and request.POST.get("delete_account") == "true":
         account.delete()
-        request.session.flush()  # remove session and properly log out
+        request.session.flush()  # properly log out
         return redirect("login")
 
     return render(request, 'payroll_app/manage_account.html', {'account': account})
