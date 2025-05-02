@@ -61,6 +61,8 @@ def change_password(request, pk):
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
 
+    # FIX PART WHERE WHEN OPENED IT SAYS CURRENT PASSWORD IS INCORRECT KAAGAD
+    
         if current_password != account.password:
             return render(request, 'payroll_app/change_password.html', {'error': 'Current password is incorrect', 'account': account})
 
