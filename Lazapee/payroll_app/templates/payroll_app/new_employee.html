@@ -1,0 +1,49 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+{% if success %}
+    <div class="alert alert-success" role="alert">{{ success }}</div>
+{% endif %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow w-50 mx-3" style="max-width: 600px;">
+        <div class="card-header bg-light">
+            <h2 class="mb-0">Create Employee</h2>
+        </div>
+
+        <div class="card-body">
+            <form method="post" action="{% url 'new_employee' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_number" class="form-label">ID Number:</label>
+                    <input type="text" class="form-control" id="id_number" name="id_number" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="rate" class="form-label">Rate:</label>
+                    <input type="number" class="form-control" id="rate" name="rate" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="allowance" class="form-label">Allowance (Optional):</label>
+                    <input type="number" class="form-control" id="allowance" name="allowance">
+                </div>
+
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

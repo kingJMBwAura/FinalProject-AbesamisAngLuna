@@ -95,3 +95,50 @@ def homepage(request):
             return redirect('login')
     else:
         return redirect('login')
+    
+def new_employee(request):
+    account_id = request.session.get('account_id')
+
+    if account_id:
+        if request.method == "POST":
+            name = request.POST.get("name")
+            id_number = request.POST.get("id_number")
+            rate = request.POST.get("rate")
+            allowance = request.POST.get("allowance")
+
+            # Check if all required fields are entered
+            if not all([name, id_number, rate]):
+                return render(request, 'payroll_app/new_employee.html', {'error': 'Enter required fields'})
+
+            # Validate number fields
+            try:
+                name = str(name)
+                id_number = int(id_number)
+                rate = float(rate)
+                allowance = float(allowance) if allowance else 0
+
+            except ValueError:
+                return render(request, 'payroll_app/new_employee.html', {'error': 'Invalid input'})
+            if len(str(id_number)) != 6:
+                    return render(request, 'payroll_app/new_employee.html', {'error': 'ID must be 6 digits'})
+            if rate <= 0:
+                return render(request, 'payroll_app/new_employee.html', {'error': 'Insert valid rate'})
+            if allowance < 0:
+                return render(request, 'payroll_app/new_employee.html', {'error': 'Insert valid allowance'})
+
+            # Avoiding duplicate id numbers
+            if Employee.objects.filter(id_number=id_number).exists():
+                return render(request, 'payroll_app/new_employee.html', {'error': f'ID {id_number} already exists'})
+
+            # Create employee
+            Employee.objects.create(
+                name=name,
+                id_number=id_number,
+                rate=rate,
+                allowance=allowance
+            )
+            # Redirect after successful creation
+            return render(request, 'payroll_app/new_employee.html', {'success' : 'Employee added successfully'})
+        return render(request, 'payroll_app/new_employee.html')
+    else:
+        return redirect('login')

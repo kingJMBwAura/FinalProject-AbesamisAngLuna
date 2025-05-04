@@ -8,7 +8,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="mb-0">Employees</h2>
                     <div class="d-flex">
-                        <a href="" class="btn btn-secondary me-2">+New Employee</a>
+                        <a href="{% url 'new_employee' %}" class="btn btn-secondary me-2">+New Employee</a>
                         <a href="{% url 'manage_account' pk=account.pk %}" class="btn btn-secondary me-2">Manage Account</a>
                         <form action="{% url 'logout' %}" method="post" class="d-inline">
                             {% csrf_token %}
