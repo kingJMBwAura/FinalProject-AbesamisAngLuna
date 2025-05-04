@@ -154,67 +154,70 @@ def new_employee(request):
     
 def delete_employee(request, pk):
     account_id = request.session.get('account_id')
-    if not account_id:
+    if account_id:
+        employee = get_object_or_404(Employee, id_number=pk)
+        employee.delete()
+        return redirect('homepage')
+    
+    else:
         return redirect('login')
-
-    employee = get_object_or_404(Employee, id_number=pk)
-    employee.delete()
-    return redirect('homepage')
 
 def update_employee(request, pk):
     account_id = request.session.get('account_id')
-    if not account_id:
+    if account_id:
+        employee = get_object_or_404(Employee, id_number=pk)
+
+        if request.method == "POST":
+            name = request.POST.get("name")
+            id_number = request.POST.get("id_number")
+            rate = request.POST.get("rate")
+            allowance = request.POST.get("allowance")
+
+            # Check if all required fields are entered
+            if not all([name, id_number, rate]):
+                return render(request, 'payroll_app/update_employee.html', {'error': 'Enter required fields', 'employee': employee})
+
+            # Validate number fields
+            try:
+                id_number = int(id_number)
+                rate = float(rate)
+                allowance = float(allowance) if allowance else 0
+
+            except ValueError:
+                return render(request, 'payroll_app/update_employee.html', {'error': 'Invalid input', 'employee': employee})
+            
+            # 6 digit id number
+            if len(str(id_number)) != 6:
+                    return render(request, 'payroll_app/update_employee.html', {'error': 'ID must be 6 digits', 'employee': employee})
+            
+            # Name cannot contain numbers
+            if any(char.isdigit() for char in name):
+                return render(request, 'payroll_app/update_employee.html', {'error': 'Name cannot contain numbers', 'employee': employee})
+            
+            # rate cannot be negative or 0
+            if rate <= 0:
+                return render(request, 'payroll_app/update_employee.html', {'error': 'Insert valid rate', 'employee': employee})
+            
+            # Allowance cannot be negative
+            if allowance < 0:
+                return render(request, 'payroll_app/update_employee.html', {'error': 'Insert valid allowance', 'employee': employee})
+
+            # Avoiding duplicate id numbers
+            if Employee.objects.filter(id_number=id_number).exclude(pk=pk).exists():
+                return render(request, 'payroll_app/update_employee.html', {'error': f'ID {id_number} already exists', 'employee': employee})
+
+            # Update employee
+            employee.name = name
+            employee.id_number = id_number
+            employee.rate = rate
+            employee.allowance = allowance
+            employee.save()
+
+            # Redirect after successful update
+            return redirect('homepage')
+        
+        return render(request, 'payroll_app/update_employee.html', {'employee': employee})
+    else:
         return redirect('login')
-
-    employee = get_object_or_404(Employee, id_number=pk)
-
-    if request.method == "POST":
-        name = request.POST.get("name")
-        id_number = request.POST.get("id_number")
-        rate = request.POST.get("rate")
-        allowance = request.POST.get("allowance")
-
-        # Check if all required fields are entered
-        if not all([name, id_number, rate]):
-            return render(request, 'payroll_app/update_employee.html', {'error': 'Enter required fields', 'employee': employee})
-
-        # Validate number fields
-        try:
-            id_number = int(id_number)
-            rate = float(rate)
-            allowance = float(allowance) if allowance else 0
-
-        except ValueError:
-            return render(request, 'payroll_app/update_employee.html', {'error': 'Invalid input', 'employee': employee})
-        
-        # 6 digit id number
-        if len(str(id_number)) != 6:
-                return render(request, 'payroll_app/update_employee.html', {'error': 'ID must be 6 digits', 'employee': employee})
-        
-        # Name cannot contain numbers
-        if any(char.isdigit() for char in name):
-            return render(request, 'payroll_app/update_employee.html', {'error': 'Name cannot contain numbers', 'employee': employee})
-        
-        # rate cannot be negative or 0
-        if rate <= 0:
-            return render(request, 'payroll_app/update_employee.html', {'error': 'Insert valid rate', 'employee': employee})
-        
-        # Allowance cannot be negative
-        if allowance < 0:
-            return render(request, 'payroll_app/update_employee.html', {'error': 'Insert valid allowance', 'employee': employee})
-
-        # Avoiding duplicate id numbers
-        if Employee.objects.filter(id_number=id_number).exclude(pk=pk).exists():
-            return render(request, 'payroll_app/update_employee.html', {'error': f'ID {id_number} already exists', 'employee': employee})
-
-        # Update employee
-        employee.name = name
-        employee.id_number = id_number
-        employee.rate = rate
-        employee.allowance = allowance
-        employee.save()
-
-        # Redirect after successful update
-        return redirect('homepage')
     
-    return render(request, 'payroll_app/update_employee.html', {'employee': employee})
+def ot_update(request, pk):
