@@ -27,6 +27,7 @@ urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('logout/', views.logout, name='logout'),
     path('new_employee/', views.new_employee, name='new_employee'),
+    path('delete_employee/<int:pk>/', views.delete_employee, name='delete_employee'),
+    path('update_employee/<int:pk>/', views.update_employee, name='update_employee'),
     #path('view_employee/<int:pk>/', views.view_employee, name='view_employee'),
-    #ath('edit_employee/<int:pk>/', views.edit_employee, name='edit_employee'),
 ]
