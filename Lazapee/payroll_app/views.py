@@ -221,3 +221,21 @@ def update_employee(request, pk):
         return redirect('login')
     
 def ot_update(request, pk):
+    account_id = request.session.get('account_id')
+    if account_id:
+        account = get_object_or_404(Account, pk=account_id)
+        employee = get_object_or_404(Employee, id_number=pk)
+
+        if request.method == "POST":
+            ot_hours = float(request.POST.get("ot_hours"))
+            employee.overtime_pay += (employee.rate / 160) * 1.5 * ot_hours
+            employee.save()
+            return redirect('homepage')
+        else:
+            employee_list = Employee.objects.all()
+            return render(request, 'payroll_app/homepage.html', {
+                'employee': employee_list,
+                'account': account
+            })
+    else:
+        return redirect('login')

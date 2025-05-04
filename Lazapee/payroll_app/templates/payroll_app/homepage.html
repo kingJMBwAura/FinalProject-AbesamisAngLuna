@@ -32,9 +32,9 @@
                 <tr>
                     <td> {{ e.name }} </td>
                     <td> {{ e.id_number }} </td>
-                    <td> {{ e.rate }} </td>
-                    <td> {{ e.allowance }} </td>
-                    <td> {{ e.overtime_pay }} </td>
+                    <td> {{ e.rate|floatformat:0 }} </td>
+                    <td> {{ e.allowance|floatformat:0 }} </td>
+                    <td> {{ e.overtime_pay|floatformat:0 }} </td>
                     <td>
                         <div class="d-flex flex-column gap-2">
                             <div class="d-flex gap-2">
@@ -42,10 +42,10 @@
                                 <a href="{% url 'delete_employee' e.pk %}" class="btn btn-danger btn-sm">Delete</a>
                             </div>
                             <div class="d-flex gap-2">
-                                <input type="number" min="0" name="quant" id="quant-{{ e.id }}"
-                                class="form-control form-control-sm" placeholder="Overtime Hours" required>
-                                <form action="" method="post" class="d-inline">
+                                <form action="{% url 'ot_update' e.pk %}" method="post" class="d-flex gap-2">
                                     {% csrf_token %}
+                                    <input type="number" min="0" name="ot_hours" id="quant-{{ e.pk }}"
+                                        class="form-control form-control-sm" placeholder="Overtime Hours" required>
                                     <button type="submit" class="btn btn-success btn-sm">Add Overtime</button>
                                 </form>
                             </div>
