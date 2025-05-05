@@ -30,4 +30,5 @@ urlpatterns = [
     path('delete_employee/<int:pk>/', views.delete_employee, name='delete_employee'),
     path('update_employee/<int:pk>/', views.update_employee, name='update_employee'),
     path('ot_update/<int:pk>/', views.ot_update, name='ot_update'),
+    path('payroll/', views.payroll_page, name='payroll_page'),
 ]

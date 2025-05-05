@@ -1,0 +1,128 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block content %}
+        <div class="payroll-container" style="padding: 30px;">
+            <h2>Create Payroll</h2>
+            
+            <!-- Payroll Creation Form -->
+            <table class="table table-striped">
+                <tbody>
+                    <form method="post" class="payroll-form">
+                        {% csrf_token %}
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <label for="payroll_for">Payroll For:</label>
+                                    <select name="payroll_for" id="payroll_for" class="form-control" onchange="toggleEmployeeSelect()"> <!-- function -->
+                                        <option value="all">All Employees</option>
+                                        <option value="individual">Select Employee ID</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td> <!-- style="display:none; hides the dropdown if all employees" -->
+                                <div class="form-group" id="employee_select_div" style="display:none;"> 
+                                    <label for="employee_id">Employee ID:</label>
+                                    <select name="employee_id" id="employee_id" class="form-control">
+                                        {% for employee in employees %}
+                                        <option value="{{ employee.id }}{{ employee.name }}">{{ employee.id_number }} - {{ employee.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </td>
+                            <td></td> <!-- For table formatting -->
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group" style="width: 250px;">
+                                    <label for="month">Month:</label>
+                                    <select name="month" id="month" class="form-control">
+                                        {% for month in months %}
+                                        <option value="{{ month }}">{{ month }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group" style="width: 250px;">
+                                    <label for="year">Year:</label>
+                                    <input type="text" name="year" id="year" class="form-control" required>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group" style="width: 250px;">
+                                    <label for="cycle">Cycle:</label>
+                                    <select name="cycle" id="cycle" class="form-control">
+                                        <option value="1">Cycle 1</option>
+                                        <option value="2">Cycle 2</option>
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td></td> <!-- For table formatting -->
+                        </tr>
+
+                    </form>
+                </tbody>
+            </table>
+
+            <!-- Error/Success Messages -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Payslips Summary Table -->
+            <h3>Recent Payslips</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Number</th>
+                        <th>Date Range</th>
+                        <th>Cycle</th>
+                        <th>Total Pay</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payslip in recent_payslips %}
+                    <tr>
+                        <td>{{ payslip.employee.id_number }}</td>
+                        <td>{{ payslip.date_range }}</td>
+                        <td>Cycle {{ payslip.cycle }}</td>
+                        <td>₱{{ payslip.total_pay|floatformat:2 }}</td>
+                        <td>
+                            <a href="{% url 'view_payslip' payslip.id %}" class="btn btn-sm btn-info">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">No payslips generated yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- if select employee is selected, display is changed from none to block (makes dropdown visible) -->
+        <script> 
+        function toggleEmployeeSelect() { 
+            const payrollFor = document.getElementById('payroll_for').value;
+            document.getElementById('employee_select_div').style.display = 
+                payrollFor === 'individual' ? 'block' : 'none';
+        }
+        </script> 
+{% endblock %}

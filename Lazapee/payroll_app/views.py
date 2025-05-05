@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Employee, Payslip, Account
+from django.contrib import messages
 
 # Account management methods
 def login(request):
@@ -239,3 +240,45 @@ def ot_update(request, pk):
             })
     else:
         return redirect('login')
+
+# payslips
+
+MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+]
+
+def get_date_range(month, cycle, year):
+    if cycle == 1:
+        return f"{month} 1-15, {year}"
+    return f"{month} 16-31, {year}"
+
+def payroll_page(request):
+    employees = Employee.objects.all()
+    recent_payslips = Payslip.objects.order_by('-id')[:50]  # Show last 50 entries
+
+    if request.method == 'POST':
+        payroll_for = request.POST.get('payroll_for')
+        month = request.POST.get('month')
+        year = request.POST.get('year')
+        cycle = int(request.POST.get('cycle'))
+
+        try:
+            year = int(year)
+        except ValueError:
+            messages.error(request, "Invalid year format")
+            return redirect('payroll_page')
+
+        # Get selected employees
+        if payroll_for == 'all':
+            selected_employees = employees
+        else:
+            employee_id = request.POST.get('employee_id')
+            selected_employees = Employee.objects.filter(id=employee_id)
+
+
+    return render(request, 'payroll_app/payroll_page.html', {
+        'employees': employees,
+        'months': MONTHS,
+        'recent_payslips': recent_payslips
+    })
