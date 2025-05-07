@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Employee, Payslip, Account
 from django.contrib import messages
+from django.utils import timezone
 
 # Account management methods
 def login(request):
@@ -255,30 +256,89 @@ def get_date_range(month, cycle, year):
 
 def payroll_page(request):
     employees = Employee.objects.all()
-    recent_payslips = Payslip.objects.order_by('-id')[:50]  # Show last 50 entries
+    payslips = Payslip.objects.order_by('-date_range')
+
+    months = [(i + 1, MONTHS[i]) for i in range(12)]
 
     if request.method == 'POST':
         payroll_for = request.POST.get('payroll_for')
-        month = request.POST.get('month')
-        year = request.POST.get('year')
-        cycle = int(request.POST.get('cycle'))
+        selected_cycle = int(request.POST.get('cycle'))
+        selected_month = int(request.POST.get('month'))
+        selected_year = request.POST.get('year')
 
-        try:
-            year = int(year)
-        except ValueError:
-            messages.error(request, "Invalid year format")
-            return redirect('payroll_page')
+        month_name = MONTHS[selected_month - 1]
+        date_range = get_date_range(month_name, selected_cycle, selected_year)
 
-        # Get selected employees
         if payroll_for == 'all':
-            selected_employees = employees
+            target_employees = employees
         else:
             employee_id = request.POST.get('employee_id')
-            selected_employees = Employee.objects.filter(id=employee_id)
+            try:
+                employee = Employee.objects.get(id_number=employee_id)
+                target_employees = [employee]
+            except Employee.DoesNotExist:
+                messages.error(request, f"No employee found with ID {employee_id}.")
+                return redirect('payroll_page')
 
+        for emp in target_employees:
+            # Check if payslip already exists for this period and cycle
+            if Payslip.objects.filter(id_number=emp, month=month_name, year=selected_year, pay_cycle=selected_cycle).exists():
+                messages.warning(request, f"Payslip for {emp.name} - {month_name} Cycle {selected_cycle} already exists.")
+                continue
+
+            rate = emp.rate or 0
+            allowance = emp.allowance or 0
+            overtime = emp.overtime_pay or 0
+            earnings = rate + allowance + overtime
+
+            # Deductions
+            tax = 0.20 * rate
+            pag_ibig = 100 if selected_cycle == 1 else 0
+            philhealth = 0.04 * rate if selected_cycle == 2 else 0
+            sss = 0.045 * rate if selected_cycle == 2 else 0
+            total_deductions = tax + pag_ibig + philhealth + sss
+            total_pay = earnings - total_deductions
+
+            # Save payslip
+            Payslip.objects.create(
+                id_number=emp,
+                month=month_name,
+                date_range=date_range,
+                year=selected_year,
+                pay_cycle=selected_cycle,
+                rate=rate,
+                earning_allowance=allowance,
+                deductions_tax=tax,
+                deductions_health=philhealth,
+                pag_ibig=pag_ibig,
+                sss=sss,
+                overtime=overtime,
+                total_pay=total_pay,
+                gross_pay=earnings,
+                total_deductions=total_deductions,
+            )
+
+            # Reset overtime
+            emp.resetOvertime()
+
+            messages.success(request, f"Payslip for {emp.name} - {month_name} Cycle {selected_cycle} created.")
+
+        return redirect('payroll_page')
 
     return render(request, 'payroll_app/payroll_page.html', {
         'employees': employees,
-        'months': MONTHS,
-        'recent_payslips': recent_payslips
+        'payslips': payslips,
+        'months': months,
     })
+
+
+def view_payslip(request, payslip_id):
+    payslip = get_object_or_404(Payslip, pk=payslip_id)
+
+    thing = {
+        'payslip': payslip,
+        'employee': payslip.id_number,
+        'cycle': payslip.pay_cycle,
+    }
+
+    return render(request, 'payroll_app/view_payslip.html', thing)

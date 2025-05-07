@@ -1,0 +1,66 @@
+{% extends 'payroll_app/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-center mt-5">
+    <div style="max-width: 700px; width: 100%;">
+
+        <div class="d-flex justify-content-between mb-4">
+            <div>
+                <p class="mb-1"><strong>NAME:</strong> {{ employee.name }}</p>
+                <p class="mb-1"><strong>ID NUMBER:</strong> {{ employee.id_number }}</p>
+            </div>
+            <div class="text-end">
+                <p class="mb-1"><strong>DATE:</strong> {{ payslip.date_range }}</p>
+                <p class="mb-1"><strong>PAYSLIP ID:</strong> {{ payslip.id }}</p>
+            </div>
+        </div>
+
+        <p class="fw-bold">EARNINGS:</p>
+        <div class="row">
+            <div class="col-6">Base Pay</div>
+            <div class="col-6 text-end">₱{{ payslip.rate|floatformat:2 }}</div>
+            <div class="col-6">Allowances</div>
+            <div class="col-6 text-end">₱{{ payslip.earning_allowance|floatformat:2 }}</div>
+            <div class="col-6">Overtime</div>
+            <div class="col-6 text-end">₱{{ payslip.overtime|floatformat:2 }}</div>
+        </div>
+
+        <hr class="my-2">
+        <div class="d-flex justify-content-between fw-bold mb-4">
+            <div>GROSS PAY</div>
+            <div>PHP {{ payslip.gross_pay|floatformat:2 }}</div>
+        </div>
+
+        <p class="fw-bold">DEDUCTIONS:</p>
+        <div class="row">
+            <div class="col-6">W/HOLDING TAX</div>
+            <div class="col-6 text-end">₱{{ payslip.deductions_tax|floatformat:2 }}</div>
+            {% if cycle == 1 %}
+            <div class="col-6">Pag-IBIG</div>
+            <div class="col-6 text-end">₱{{ payslip.pag_ibig|floatformat:2 }}</div>
+            {% else %}
+            <div class="col-6">PHILHEALTH</div>
+            <div class="col-6 text-end">₱{{ payslip.deductions_health|floatformat:2 }}</div>
+            <div class="col-6">SSS</div>
+            <div class="col-6 text-end">₱{{ payslip.sss|floatformat:2 }}</div>
+            {% endif %}
+        </div>
+
+        <hr class="my-2">
+        <div class="d-flex justify-content-between fw-bold mb-4">
+            <div>TOTAL DEDUCTIONS</div>
+            <div>PHP {{ payslip.total_deductions|floatformat:2 }}</div>
+        </div>
+
+        <!-- Net Pay Section -->
+        <p class="fw-bold">NET PAY:</p>
+        <div class="text-end fs-4 fw-bold mb-5">PHP {{ payslip.total_pay|floatformat:2 }}</div>
+
+        <!-- Back Button -->
+        <div class="text-center">
+            <a href="{% url 'payroll_page' %}" class="btn btn-secondary mt-2">Back to Payroll</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
