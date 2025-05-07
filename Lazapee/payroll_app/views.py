@@ -339,6 +339,7 @@ def view_payslip(request, payslip_id):
         'payslip': payslip,
         'employee': payslip.id_number,
         'cycle': payslip.pay_cycle,
+        # add gross pay and total deductions
     }
 
     return render(request, 'payroll_app/view_payslip.html', thing)
