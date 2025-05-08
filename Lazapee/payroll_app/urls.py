@@ -31,5 +31,5 @@ urlpatterns = [
     path('update_employee/<int:pk>/', views.update_employee, name='update_employee'),
     path('ot_update/<int:pk>/', views.ot_update, name='ot_update'),
     path('payroll/', views.payroll_page, name='payroll_page'),
-    path('payroll/view/<int:payslip_id>/', views.view_payslip, name='view_payslip')
+    path('payroll/view/<int:pk>/', views.view_payslip, name='view_payslip')
 ]

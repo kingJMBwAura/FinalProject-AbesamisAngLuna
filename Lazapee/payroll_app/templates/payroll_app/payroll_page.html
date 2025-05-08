@@ -25,7 +25,7 @@
                             <label for="employee_id">Employee ID:</label>
                             <select name="employee_id" class="form-control" required>
                                 {% for emp in employees %}
-                                    <option value="{{ emp.id_number }}">{{ emp.name }}</option>
+                                    <option value="{{ emp.id_number }}">{{ emp.id_number }}</option>
                                 {% endfor %}
                             </select>
                         </div>
