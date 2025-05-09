@@ -307,8 +307,8 @@ def payroll_page(request):
                     pag_ibig = 0
                     philhealth = 0.04 * rate
                     sss = 0.045 * rate
-                    tax = (rate + allowance + overtime - philhealth - sss) * 0.2 
-                    total_pay = (rate + allowance + overtime - philhealth - sss) - tax
+                    tax = (rate/2 + allowance + overtime - philhealth - sss) * 0.2 
+                    total_pay = (rate/2 + allowance + overtime - philhealth - sss) - tax
                     total_deduction = tax + philhealth + sss
 
                 # Save payslip
@@ -327,7 +327,7 @@ def payroll_page(request):
                     overtime=overtime,
                     total_pay=total_pay,
                     gross_pay=earnings,
-                    total_deductions=total_deduction
+                    total_deductions=total_deduction,
                 )
 
                 # Reset overtime
