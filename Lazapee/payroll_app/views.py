@@ -212,7 +212,9 @@ def update_employee(request, pk):
             employee.id_number = id_number
             employee.rate = rate
             employee.allowance = allowance
+            employee.overtime_pay = (employee.rate / 160) * 1.5 * employee.ot_hours
             employee.save()
+
 
             # Redirect after successful update
             return redirect('homepage')
@@ -228,8 +230,19 @@ def ot_update(request, pk):
         employee = get_object_or_404(Employee, id_number=pk)
 
         if request.method == "POST":
-            ot_hours = float(request.POST.get("ot_hours"))
-            employee.overtime_pay += (employee.rate / 160) * 1.5 * ot_hours
+            try:
+                ot_hours = float(request.POST.get("ot_hours"))
+                if ot_hours < 0:
+                    raise ValueError
+            except (TypeError, ValueError):
+                return render(request, 'payroll_app/homepage.html', {
+                    'error': 'Enter a valid OT hour value',
+                    'employee': Employee.objects.all(),
+                    'account': account
+                })
+
+            employee.ot_hours = ot_hours  # store new value
+            employee.overtime_pay = (employee.rate / 160) * 1.5 * ot_hours  # recalculate pay
             employee.save()
             return redirect('homepage')
         else:
