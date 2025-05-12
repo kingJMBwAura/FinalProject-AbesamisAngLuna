@@ -204,7 +204,7 @@ def update_employee(request, pk):
                 return render(request, 'payroll_app/update_employee.html', {'error': 'Insert valid allowance', 'employee': employee})
 
             # Avoiding duplicate id numbers
-            if Employee.objects.filter(id_number=id_number).exclude(pk=pk).exists():
+            if Employee.objects.filter(id_number=id_number).exclude(pk=employee.pk).exists():
                 return render(request, 'payroll_app/update_employee.html', {'error': f'ID {id_number} already exists', 'employee': employee})
 
             # Update employee
