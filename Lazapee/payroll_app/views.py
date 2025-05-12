@@ -241,8 +241,8 @@ def ot_update(request, pk):
                     'account': account
                 })
 
-            employee.ot_hours = ot_hours  # store new value
-            employee.overtime_pay = (employee.rate / 160) * 1.5 * ot_hours  # recalculate pay
+            employee.ot_hours += ot_hours
+            employee.overtime_pay = (employee.rate / 160) * 1.5 * employee.ot_hours  # recalculate pay
             employee.save()
             return redirect('homepage')
         else:
