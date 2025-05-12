@@ -156,7 +156,7 @@ def new_employee(request):
 def delete_employee(request, pk):
     account_id = request.session.get('account_id')
     if account_id:
-        employee = get_object_or_404(Employee, id_number=pk)
+        employee = get_object_or_404(Employee, pk=pk)
         employee.delete()
         return redirect('homepage')
     
@@ -166,7 +166,7 @@ def delete_employee(request, pk):
 def update_employee(request, pk):
     account_id = request.session.get('account_id')
     if account_id:
-        employee = get_object_or_404(Employee, id_number=pk)
+        employee = get_object_or_404(Employee, pk=pk)
 
         if request.method == "POST":
             name = request.POST.get("name")
@@ -215,7 +215,6 @@ def update_employee(request, pk):
             employee.overtime_pay = (employee.rate / 160) * 1.5 * employee.ot_hours
             employee.save()
 
-
             # Redirect after successful update
             return redirect('homepage')
         
@@ -227,7 +226,7 @@ def ot_update(request, pk):
     account_id = request.session.get('account_id')
     if account_id:
         account = get_object_or_404(Account, pk=account_id)
-        employee = get_object_or_404(Employee, id_number=pk)
+        employee = get_object_or_404(Employee, pk=pk)
 
         if request.method == "POST":
             try:
@@ -295,7 +294,6 @@ def payroll_page(request):
                     return redirect('payroll_page')
 
             for emp in target_employees:
-                # Check if payslip already exists for this period and cycle
                 if Payslip.objects.filter(id_number=emp, month=month_name, year=selected_year, pay_cycle=selected_cycle).exists():
                     messages.warning(request, f"Payslip for {emp.name} - {month_name} Cycle {selected_cycle} already exists.")
                     continue
@@ -305,7 +303,6 @@ def payroll_page(request):
                 overtime = emp.overtime_pay or 0
                 earnings = rate + allowance + overtime
 
-
                 if selected_cycle == 1:
                     pag_ibig = 100
                     tax = (rate/2 + allowance + overtime - pag_ibig) * 0.2 
@@ -313,8 +310,6 @@ def payroll_page(request):
                     philhealth = 0
                     sss = 0
                     total_deduction = tax + pag_ibig
-
-
                 else:
                     pag_ibig = 0
                     philhealth = 0.04 * rate
@@ -323,7 +318,7 @@ def payroll_page(request):
                     total_pay = (rate/2 + allowance + overtime - philhealth - sss) - tax
                     total_deduction = tax + philhealth + sss
 
-                # Save payslip
+                # Create Payslip with the Employee's id_number as a string
                 Payslip.objects.create(
                     id_number=emp,
                     month=month_name,
@@ -342,7 +337,7 @@ def payroll_page(request):
                     total_deductions=total_deduction,
                 )
 
-                # Reset overtime
+                # Reset overtime after payslip is created
                 emp.resetOvertime()
 
                 messages.success(request, f"Payslip for {emp.name} - {month_name} Cycle {selected_cycle} created.")

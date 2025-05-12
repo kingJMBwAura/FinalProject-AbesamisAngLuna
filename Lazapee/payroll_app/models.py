@@ -2,8 +2,9 @@ from django.db import models
 
 # Create your models here.
 class Employee(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
-    id_number = models.CharField(max_length=6, primary_key=True)
+    id_number = models.CharField(max_length=6, unique=True)
     rate = models.FloatField(null=True, blank=True)
     overtime_pay = models.FloatField(null=True, blank=True, default=0)
     ot_hours = models.FloatField(null=True, blank=True, default=0)

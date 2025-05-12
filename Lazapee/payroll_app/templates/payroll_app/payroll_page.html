@@ -47,7 +47,7 @@
                     <td>
                         <div class="form-group" style="width: 250px;">
                             <label for="year">Year:</label>
-                            <input type="text" name="year" id="year" class="form-control" required>
+                            <input type="number" name="year" id="year" class="form-control" required placeholder="Enter year">
                         </div>
                     </td>
                     <td>
@@ -84,35 +84,34 @@
 
     <!-- Payslips Summary Table -->
     <h3>Recent Payslips</h3>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID Number</th>
-                <th>Date Range</th>
-                <th>Cycle</th>
-                <th>Total Pay</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for payslip in payslips %}
-            <tr>
-                <td>{{ payslip.id_number.id_number }}</td>
-                <td>{{ payslip.date_range }}</td>
-                <td>Cycle {{ payslip.pay_cycle }}</td>
-                <td>₱{{ payslip.total_pay|floatformat:2 }}</td>
-                <td>
-                    <a href="{% url 'view_payslip' payslip.id %}" class="btn btn-sm btn-info">View</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">No payslips generated yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID Number</th>
+            <th>Date Range</th>
+            <th>Cycle</th>
+            <th>Total Pay</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payslip in payslips %}
+        <tr>
+            <td>{{ payslip.id_number.id_number }}</td>
+            <td>{{ payslip.date_range }}</td>
+            <td>Cycle {{ payslip.pay_cycle }}</td>
+            <td>₱{{ payslip.total_pay|floatformat:2 }}</td>
+            <td>
+                <a href="{% url 'view_payslip' payslip.pk %}" class="btn btn-sm btn-info">View</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No payslips generated yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
 
 <script> 
 function toggleEmployeeSelect() { 
