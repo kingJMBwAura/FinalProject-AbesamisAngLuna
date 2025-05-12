@@ -299,7 +299,7 @@ def payroll_page(request):
                     total_pay = (rate/2 + allowance + overtime - pag_ibig) - tax
                     philhealth = 0
                     sss = 0
-                    total_deduction = tax + philhealth + sss
+                    total_deduction = tax + pag_ibig
 
 
                 else:
