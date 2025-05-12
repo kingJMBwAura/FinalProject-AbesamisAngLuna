@@ -6,6 +6,7 @@ class Employee(models.Model):
     id_number = models.CharField(max_length=6, primary_key=True)
     rate = models.FloatField(null=True, blank=True)
     overtime_pay = models.FloatField(null=True, blank=True, default=0)
+    ot_hours = models.FloatField(null=True, blank=True, default=0)
     allowance = models.FloatField(null=True, blank=True, default=0)
 
     def getName(self):
